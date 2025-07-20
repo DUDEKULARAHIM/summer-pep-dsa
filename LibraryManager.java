@@ -259,6 +259,7 @@ public class LibraryManager {
     public static void main(String[] args) {
         loadFromFile();
         Scanner sc = new Scanner(System.in);
+        // System.out.println("hello");
 
         while (true) {
             System.out.println("\nLibrary Management System");
