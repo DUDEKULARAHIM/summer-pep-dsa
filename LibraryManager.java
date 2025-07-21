@@ -1,215 +1,3 @@
-// import java.io.*;
-// import java.util.*;
-
-// class Book {
-//     int id;
-//     String title;
-//     String author;
-//     String checkInDate;
-//     String checkOutDate;
-
-//     public Book(int id, String title, String author, String checkInDate, String checkOutDate) {
-//         this.id = id;
-//         this.title = title;
-//         this.author = author;
-//         this.checkInDate = checkInDate;
-//         this.checkOutDate = checkOutDate;
-//     }
-
-//     public String toString() {
-//         return id + "," + title + "," + author + "," + checkInDate + "," + checkOutDate;
-//     }
-// }
-
-// class BookQueue {
-//     private Book[] queue;
-//     private int front = -1, rear = -1, size;
-
-//     public BookQueue(int size) {
-//         this.size = size;
-//         queue = new Book[size];
-//     }
-
-//     public void enqueue(Book book) {
-//         if (rear == size - 1) {
-//             System.out.println("Queue full. Cannot add more books.");
-//             return;
-//         }
-//         if (front == -1) front = 0;
-//         queue[++rear] = book;
-//     }
-
-//     public Book dequeue() {
-//         if (front == -1 || front > rear) {
-//             System.out.println("Queue is empty.");
-//             return null;
-//         }
-//         return queue[front++];
-//     }
-
-//     public void display() {
-//         if (front == -1 || front > rear) {
-//             System.out.println("Queue is empty.");
-//             return;
-//         }
-//         for (int i = front; i <= rear; i++) {
-//             System.out.println(queue[i]);
-//         }
-//     }
-
-//     public Book[] getBooks() {
-//         return Arrays.copyOfRange(queue, front, rear + 1);
-//     }
-// }
-
-// public class LibraryManager {
-//     static final String FILE_PATH = "library_books.txt";
-
-//     public static void main(String[] args) throws IOException {
-//         Scanner sc = new Scanner(System.in);
-//         BookQueue bookQueue = new BookQueue(100);
-//         loadFromFile(bookQueue);
-
-//         while (true) {
-//             System.out.println("\n1. Add Book\n2. Delete Book\n3. Search Book by Title\n4. Display All Books\n5. Exit");
-//             System.out.print("Choose: ");
-//             String choice = sc.nextLine();
-
-//             switch (choice) {
-//                 case "1":
-//                     try {
-//                         System.out.print("Enter ID: ");
-//                         int id = Integer.parseInt(sc.nextLine());
-
-//                         System.out.print("Enter Title: ");
-//                         String title = sc.nextLine();
-
-//                         System.out.print("Enter Author: ");
-//                         String author = sc.nextLine();
-
-//                         System.out.print("Enter Check-In Date (yyyy-mm-dd): ");
-//                         String in = sc.nextLine();
-
-//                         System.out.print("Enter Check-Out Date (yyyy-mm-dd): ");
-//                         String out = sc.nextLine();
-
-//                         Book newBook = new Book(id, title, author, in, out);
-//                         bookQueue.enqueue(newBook);
-//                         saveToFile(bookQueue.getBooks());
-//                         System.out.println("Book Added.");
-//                     } catch (Exception e) {
-//                         System.out.println("Invalid input. Please try again.");
-//                     }
-//                     break;
-
-//                 case "2":
-//                     Book removed = bookQueue.dequeue();
-//                     if (removed != null) {
-//                         saveToFile(bookQueue.getBooks());
-//                         System.out.println("Book Deleted: " + removed);
-//                     }
-//                     break;
-
-//                 case "3":
-//                     Book[] books = bookQueue.getBooks();
-//                     mergeSort(books, 0, books.length - 1);
-//                     System.out.print("Enter Title to Search: ");
-//                     String searchTitle = sc.nextLine();
-//                     int index = binarySearch(books, searchTitle);
-//                     if (index != -1) System.out.println("Found: " + books[index]);
-//                     else System.out.println("Book Not Found.");
-//                     break;
-
-//                 case "4":
-//                     bookQueue.display();
-//                     break;
-
-//                 case "5":
-//                     System.out.println("Exiting...");
-//                     return;
-
-//                 default:
-//                     System.out.println("Invalid choice. Please enter between 1-5.");
-//             }
-//         }
-//     }
-
-//     // --- Merge Sort by Title ---
-//     public static void mergeSort(Book[] books, int l, int r) {
-//         if (l < r) {
-//             int m = (l + r) / 2;
-//             mergeSort(books, l, m);
-//             mergeSort(books, m + 1, r);
-//             merge(books, l, m, r);
-//         }
-//     }
-
-//     public static void merge(Book[] books, int l, int m, int r) {
-//         int n1 = m - l + 1;
-//         int n2 = r - m;
-
-//         Book[] L = new Book[n1];
-//         Book[] R = new Book[n2];
-
-//         for (int i = 0; i < n1; ++i) L[i] = books[l + i];
-//         for (int j = 0; j < n2; ++j) R[j] = books[m + 1 + j];
-
-//         int i = 0, j = 0, k = l;
-//         while (i < n1 && j < n2) {
-//             if (L[i].title.compareToIgnoreCase(R[j].title) <= 0) books[k++] = L[i++];
-//             else books[k++] = R[j++];
-//         }
-//         while (i < n1) books[k++] = L[i++];
-//         while (j < n2) books[k++] = R[j++];
-//     }
-
-//     // --- Binary Search ---
-//     public static int binarySearch(Book[] books, String title) {
-//         int l = 0, r = books.length - 1;
-//         while (l <= r) {
-//             int mid = (l + r) / 2;
-//             int cmp = books[mid].title.compareToIgnoreCase(title);
-//             if (cmp == 0) return mid;
-//             else if (cmp < 0) l = mid + 1;
-//             else r = mid - 1;
-//         }
-//         return -1;
-//     }
-
-//     // --- File Handling ---
-//     public static void saveToFile(Book[] books) {
-//         try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_PATH))) {
-//             for (Book b : books) {
-//                 bw.write(b.toString());
-//                 bw.newLine();
-//             }
-//         } catch (IOException e) {
-//             System.out.println("Error writing to file.");
-//         }
-//     }
-
-//     public static void loadFromFile(BookQueue bookQueue) {
-//         try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
-//             String line;
-//             while ((line = br.readLine()) != null) {
-//                 String[] parts = line.split(",", 5);
-//                 if (parts.length == 5) {
-//                     int id = Integer.parseInt(parts[0]);
-//                     String title = parts[1];
-//                     String author = parts[2];
-//                     String in = parts[3];
-//                     String out = parts[4];
-//                     bookQueue.enqueue(new Book(id, title, author, in, out));
-//                 }
-//             }
-//         } catch (IOException e) {
-//             System.out.println("No existing file. Starting fresh.");
-//         }
-//     }
-// }
-
-
-
 
 
 
@@ -217,6 +5,7 @@
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 
 class Book {
     int id;
@@ -254,12 +43,12 @@ public class LibraryManager {
     static Book[] books = new Book[MAX_BOOKS];
     static int bookCount = 0;
     static Queue<Issue> issueQueue = new LinkedList<>();
+    static HashMap<Integer, Book> bookMap = new HashMap<>();
     static final String FILE_NAME = "library_data.txt";
 
     public static void main(String[] args) {
         loadFromFile();
         Scanner sc = new Scanner(System.in);
-        // System.out.println("hello");
 
         while (true) {
             System.out.println("\nLibrary Management System");
@@ -268,8 +57,9 @@ public class LibraryManager {
             System.out.println("3. Issue a book");
             System.out.println("4. Return a book");
             System.out.println("5. Delete a book");
-            System.out.println("6. List all books");
-            System.out.println("7. Exit");
+            // System.out.println("6. List all books sorted by title");
+            System.out.println("7. List all books sorted by ID");
+            System.out.println("8. Exit");
             System.out.print("Enter your choice: ");
 
             try {
@@ -281,8 +71,15 @@ public class LibraryManager {
                     case 3 -> issueBook(sc);
                     case 4 -> returnBook(sc);
                     case 5 -> deleteBook(sc);
-                    case 6 -> listAllBooks();
+                    // case 6 -> {
+                    //     mergeSortByTitle(books, 0, bookCount - 1);
+                    //     listAllBooks();
+                    // }
                     case 7 -> {
+                        sortById();
+                        listAllBooks();
+                    }
+                    case 8 -> {
                         System.out.println("Exiting...");
                         return;
                     }
@@ -294,7 +91,6 @@ public class LibraryManager {
         }
     }
 
-    // --- Add Book ---
     static void addBook(Scanner sc) {
         if (bookCount >= MAX_BOOKS) {
             System.out.println("Library is full.");
@@ -303,14 +99,28 @@ public class LibraryManager {
         try {
             System.out.print("Enter book ID: ");
             int id = Integer.parseInt(sc.nextLine());
+            if (bookMap.containsKey(id)) {
+                System.out.println("Book ID already exists.");
+                return;
+            }
 
             System.out.print("Enter book title: ");
             String title = sc.nextLine();
+            if (!title.matches("[a-zA-Z0-9! ]+")) {
+                System.out.println("Invalid title. Use letters, digits and spaces only.");
+                return;
+            }
 
             System.out.print("Enter book author: ");
             String author = sc.nextLine();
+            if (!author.matches("[a-zA-Z ]+")) {
+                System.out.println("Invalid author name. Use letters and spaces only.");
+                return;
+            }
 
-            books[bookCount++] = new Book(id, title, author, "Available");
+            Book newBook = new Book(id, title.trim(), author.trim(), "Available");
+            books[bookCount++] = newBook;
+            bookMap.put(id, newBook);
             saveToFile();
             System.out.println("Book added successfully.");
         } catch (Exception e) {
@@ -318,70 +128,85 @@ public class LibraryManager {
         }
     }
 
-    // --- Search Book ---
     static void searchBook(Scanner sc) {
         System.out.print("Enter book ID or title: ");
         String query = sc.nextLine().trim();
         boolean found = false;
 
-        for (int i = 0; i < bookCount; i++) {
-            if (String.valueOf(books[i].id).equals(query) || books[i].title.equalsIgnoreCase(query)) {
-                displayBook(books[i]);
+        try {
+            int id = Integer.parseInt(query);
+            Book b = bookMap.get(id);
+            if (b != null) {
+                displayBook(b);
                 found = true;
-                break;
+            }
+        } catch (NumberFormatException e) {
+            for (int i = 0; i < bookCount; i++) {
+                if (books[i].title.equalsIgnoreCase(query)) {
+                    displayBook(books[i]);
+                    found = true;
+                    break;
+                }
             }
         }
 
-        if (!found) {
-            System.out.println("Book not found.");
-        }
+        if (!found) System.out.println("Book not found.");
     }
 
-    // --- Issue Book ---
     static void issueBook(Scanner sc) {
+        sortById();
+        listAllBooks();
         System.out.print("Enter book ID: ");
-        try {
-            int id = Integer.parseInt(sc.nextLine());
-            for (int i = 0; i < bookCount; i++) {
-                if (books[i].id == id && books[i].status.equals("Available")) {
-                    System.out.print("Enter student name: ");
-                    String name = sc.nextLine();
-                    System.out.print("Enter issue date (yyyy-mm-dd): ");
-                    String date = sc.nextLine();
-                    issueQueue.add(new Issue(id, name, date));
-                    books[i].status = "Issued";
-                    saveToFile();
-                    System.out.println("Book issued.");
-                    return;
-                }
-            }
-            System.out.println("Book not available or already issued.");
-        } catch (Exception e) {
-            System.out.println("Invalid ID.");
-        }
-    }
 
-    // --- Return Book ---
-    static void returnBook(Scanner sc) {
-        System.out.print("Enter book ID: ");
         try {
             int id = Integer.parseInt(sc.nextLine());
-            for (int i = 0; i < bookCount; i++) {
-                if (books[i].id == id && books[i].status.equals("Issued")) {
-                    if (!issueQueue.isEmpty()) issueQueue.poll(); // remove the top issued book
-                    books[i].status = "Available";
-                    saveToFile();
-                    System.out.println("Book returned.");
+            Book book = bookMap.get(id);
+            if (book != null && book.status.equals("Available")) {
+
+                System.out.print("Enter student name: ");
+                String name = sc.nextLine();
+                if (!name.matches("[a-zA-Z ]+")) {
+                    System.out.println("Invalid name. Only letters and spaces allowed.");
                     return;
                 }
+
+                System.out.print("Enter issue date (yyyy-mm-dd): ");
+                String date = sc.nextLine();
+                if (!date.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                    System.out.println("Invalid date format.");
+                    return;
+                }
+
+                issueQueue.add(new Issue(id, name.trim(), date));
+                book.status = "Issued";
+                saveToFile();
+                System.out.println("Book issued.");
+            } else {
+                System.out.println("Book not available or already issued.");
             }
-            System.out.println("Book not found or not issued.");
         } catch (Exception e) {
             System.out.println("Invalid input.");
         }
     }
 
-    // --- Delete Book ---
+    static void returnBook(Scanner sc) {
+        System.out.print("Enter book ID: ");
+        try {
+            int id = Integer.parseInt(sc.nextLine());
+            Book book = bookMap.get(id);
+            if (book != null && book.status.equals("Issued")) {
+                if (!issueQueue.isEmpty()) issueQueue.poll();
+                book.status = "Available";
+                saveToFile();
+                System.out.println("Book returned.");
+            } else {
+                System.out.println("Book not found or not issued.");
+            }
+        } catch (Exception e) {
+            System.out.println("Invalid input.");
+        }
+    }
+
     static void deleteBook(Scanner sc) {
         System.out.print("Enter book ID: ");
         try {
@@ -392,6 +217,7 @@ public class LibraryManager {
                         books[j] = books[j + 1];
                     }
                     books[--bookCount] = null;
+                    bookMap.remove(id);
                     saveToFile();
                     System.out.println("Book deleted.");
                     return;
@@ -403,9 +229,7 @@ public class LibraryManager {
         }
     }
 
-    // --- List All Books (Merge Sort by Title) ---
     static void listAllBooks() {
-        mergeSort(books, 0, bookCount - 1);
         System.out.println("\nAll Books:");
         for (int i = 0; i < bookCount; i++) {
             displayBook(books[i]);
@@ -413,23 +237,23 @@ public class LibraryManager {
     }
 
     static void displayBook(Book b) {
-        System.out.println("Book ID: " + b.id);
-        System.out.println("Title: " + b.title);
-        System.out.println("Author: " + b.author);
-        System.out.println("Status: " + b.status);
+        System.out.println("----------------------------");
+        System.out.println("Book ID : " + b.id);
+        System.out.println("Title   : " + b.title);
+        System.out.println("Author  : " + b.author);
+        System.out.println("Status  : " + b.status);
     }
 
-    // --- Merge Sort ---
-    static void mergeSort(Book[] arr, int l, int r) {
+    static void mergeSortByTitle(Book[] arr, int l, int r) {
         if (l < r) {
             int m = (l + r) / 2;
-            mergeSort(arr, l, m);
-            mergeSort(arr, m + 1, r);
-            merge(arr, l, m, r);
+            mergeSortByTitle(arr, l, m);
+            mergeSortByTitle(arr, m + 1, r);
+            mergeByTitle(arr, l, m, r);
         }
     }
 
-    static void merge(Book[] arr, int l, int m, int r) {
+    static void mergeByTitle(Book[] arr, int l, int m, int r) {
         int n1 = m - l + 1, n2 = r - m;
         Book[] L = new Book[n1];
         Book[] R = new Book[n2];
@@ -446,7 +270,10 @@ public class LibraryManager {
         while (j < n2) arr[k++] = R[j++];
     }
 
-    // --- File I/O ---
+    static void sortById() {
+        Arrays.sort(books, 0, bookCount, Comparator.comparingInt(b -> b.id));
+    }
+
     static void saveToFile() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
             for (int i = 0; i < bookCount; i++) {
@@ -468,11 +295,14 @@ public class LibraryManager {
                 String[] data = line.split(",", 4);
                 if (data.length == 4) {
                     int id = Integer.parseInt(data[0]);
-                    books[bookCount++] = new Book(id, data[1], data[2], data[3]);
+                    Book newBook = new Book(id, data[1], data[2], data[3]);
+                    books[bookCount++] = newBook;
+                    bookMap.put(id, newBook);
                 }
             }
         } catch (IOException e) {
             System.out.println("Error reading file.");
         }
+
     }
 }
